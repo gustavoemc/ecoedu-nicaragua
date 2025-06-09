@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Explora el Microbosque del LVH!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-forestal: #059669;
+            /* emerald-600 */
+            --color-frutal: #D97706;
+            /* amber-600 */
+            --color-ornamental: #F59E0B;
+            /* yellow-500 */
+            --color-medicinal: #0284C7;
+            /* sky-600 */
+            --color-default: #64748B;
+            /* slate-500 */
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0fdf4;
+            line-height: 1.6;
+            color: #1e293b;
+        }
+
+        /* Improved plant cards */
+        .plant-card {
+            transition: all 0.3s ease;
+            border-width: 2px;
+            border-style: solid;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .plant-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background-color: currentColor;
+            opacity: 0.2;
+        }
+
+        .plant-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Better typography hierarchy */
+        .plant-name-common {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+
+        .scientific-name {
+            font-style: italic;
+            font-size: 0.875rem;
+        }
+
+        .family-text {
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .classification-text {
+            margin: 0.75rem 0;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.9;
+        }
+
+        .fun-fact-text {
+            font-size: 0.875rem;
+            margin-bottom: 1.25rem;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        /* Make SVG container clickable */
+        .svg-icon-container {
+            cursor: pointer;
+            margin-bottom: 0.75rem;
+        }
+
+        .svg-icon-container svg {
+            width: 64px;
+            height: 64px;
+            fill: currentColor;
+            transition: transform 0.2s ease;
+        }
+
+        .svg-icon-container:hover svg {
+            transform: scale(1.1);
+        }
+
+        .header-title {
+            font-family: 'Fredoka One', cursive;
+        }
+
+        .svg-icon-container {
+            width: 100%;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            background-color: rgba(255, 255, 255, 0.6);
+            padding: 0.25rem;
+            box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .svg-icon-container svg {
+            width: 85%;
+            height: 85%;
+            max-width: 70px;
+            max-height: 70px;
+        }
+
+        .plant-name-common {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            line-height: 1.2;
+            width: 100%;
+            text-align: center;
+        }
+
+        .scientific-family-container {
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+            margin-bottom: 0.35rem;
+            font-size: 0.75rem;
+        }
+
+        .scientific-name {
+            font-style: italic;
+            opacity: 0.85;
+        }
+
+        .family-text {
+            opacity: 0.80;
+            font-weight: 500;
+        }
+
+        .info-separator {
+            opacity: 0.7;
+            margin-left: 0.1rem;
+            margin-right: 0.1rem;
+        }
+
+        .classification-text {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.9;
+        }
+
+        .fun-fact-text {
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .button-plant {
+            margin-top: auto;
+        }
+
+        .filter-menu-item {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+
+        .filter-menu-item.active {
+            transform: scale(1.15);
+        }
+
+        .filter-menu-item svg {
+            width: 18px;
+            height: 18px;
+            margin-right: 0.375rem;
+        }
+
+        .stats-and-bar-strip {
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .segmented-bar-container {
+            display: flex;
+            width: 100%;
+            height: 38px;
+            border-radius: 0.5rem;
+            overflow: visible;
+            /* Allow highlight rings from segments to extend beyond container */
+            position: relative;
+            /* Enable z-index on child segments */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-top: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .segmented-bar-segment {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            /* Mobile first: icon above, text below */
+            align-items: center;
+            justify-content: center;
+            padding: 0.25rem 0.5rem;
+            /* Adjusted padding for vertical stacking */
+            font-size: 0.75rem;
+            /* Slightly adjust font for stacked view */
+            cursor: pointer;
+            transition: filter 0.2s ease-in-out;
+            text-align: center;
+            /* Ensure text below icon is centered */
+            overflow: visible;
+            /* Allow ring highlight to show */
+            position: relative;
+            /* Enable z-index for highlighting */
+        }
+        .segmented-bar-segment.active {
+            border: 3px solid var(--color-frutal);
+            padding: 4px;
+            position: relative;
+            z-index: 1;
+        }
+        .segmented-bar-segment.active::after {
+            content: "";
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            border: 2px solid #fff;
+            border-radius: 8px;
+            pointer-events: none;
+            z-index: 1;
+            box-shadow: 0 0 2px rgba(0,0,0,0.07);
+        }
+        .segmented-bar-segment.active .segment-icon-container svg {
+            width: 14px;
+            height: 14px;
+            z-index: 2;
+        }
+
+        .segment-icon-container svg {
+            width: 16px;
+            height: 16px;
+            fill: black !important;
+            margin-bottom: 2px;
+            flex-shrink: 0;
+        }
+
+        /* Responsive adjustments for larger screens (e.g., tablets and desktops) */
+        @media (min-width: 600px) {
+
+            /* Breakpoint for desktop layout */
+            .segmented-bar-segment {
+                flex-direction: row;
+                /* Icon and text on the same line */
+                font-size: 0.8rem;
+                /* Restore or set desktop font size */
+                padding: 0 0.5rem;
+                /* Restore or set desktop padding */
+            }
+
+            .segment-icon-container svg {
+                margin-bottom: 0;
+                /* Remove bottom margin from column layout */
+                margin-right: 5px;
+                /* Add space to the right of the icon for row layout */
+            }
+
+            .segment-stats-text {
+                display: inline;
+                /* Allow it to sit next to the icon */
+            }
+        }
+
+        /* ...existing styles... */
+    </style>
+</head>
+
+<body class="text-gray-800">
+
+    <header class="bg-gradient-to-r from-lime-500 via-green-500 to-emerald-600 text-white py-8 px-4 shadow-xl">
+        <div class="container mx-auto text-center">
+            <h1 class="header-title text-4xl md:text-5xl">¡Exploradores del Microbosque!</h1>
+            <p class="mt-2 text-md md:text-lg">Descubre las maravillas de nuestro arboretum</p>
+        </div>
+
+        <nav id="filterMenuContainer" class="container mx-auto mt-6 px-4">
+            <div id="filterMenu" class="flex flex-wrap justify-center items-center gap-2 md:gap-3">
+            </div>
+        </nav>
+
+        <div class="container mx-auto mt-6 px-4">
+            <div class="stats-and-bar-strip flex flex-col items-center gap-2 p-4 rounded-lg shadow-lg">
+                <div id="totalSpeciesTitleContainer" class="text-center w-full">
+                </div>
+                <div id="segmentedBarChartContainer" class="w-full flex flex-col items-center">
+                    <div id="segmentedBar" class="segmented-bar-container">
+                    </div>
+                </div>
+                <div id="explanatoryNoteContainer" class="explanatory-note">
+                </div>
+                <div id="plantStats" class="hidden"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8">
+        <div id="plantGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        </div>
+    </main>
+
+    <footer class="text-center py-6 mt-6 bg-green-800 text-green-50 border-t border-green-600">
+        <div>
+            <p class="text-sm leading-tight">
+                &copy; 2025 Microbosque Escolar LVH - Sembrando Conocimiento
+            </p>
+            <p class="text-xs opacity-80 leading-tight">
+                Asistente IA: Gemini 2.5 Pro (Preview), DeepSeek R1 0528, GPT-4.1 | Jun 2025
+            </p>
+            <p class="text-xs opacity-80 leading-tight">
+                Autor:
+                <a href="https://www.linkedin.com/in/gustavoernestom/" target="_blank"
+                    class="font-medium text-teal-300 hover:text-teal-200 hover:underline transition-colors duration-300">
+                    Gustavo Ernesto Martínez Cárdenas
+                </a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // SVG Icons Object
+        const svgIcons = {
+            TODAS: `<?xml version="1.0" encoding="iso-8859-1"?>
+<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 426.069 426.069" style="enable-background:new 0 0 426.069 426.069;" xml:space="preserve">
+<g>
+	<g>
+		<g>
+			<path d="M213.034,384.173c-1.311,0-2.6-0.54-3.54-1.47c-0.931-0.93-1.46-2.22-1.46-3.53c0-1.32,0.529-2.61,1.46-3.54
+				c0.94-0.93,2.22-1.47,3.54-1.47s2.609,0.54,3.529,1.47c0.94,0.93,1.471,2.22,1.471,3.54c0,1.311-0.53,2.601-1.471,3.53
+				C215.634,383.633,214.355,384.173,213.034,384.173z"/>
+		</g>
+		<g>
+			<path d="M213.034,407.953c-1.32,0-2.61-0.53-3.54-1.46c-0.92-0.931-1.46-2.22-1.46-3.54c0-1.32,0.54-2.61,1.47-3.53
+				c0.92-0.93,2.21-1.47,3.53-1.47s2.609,0.54,3.54,1.47c0.93,0.92,1.46,2.21,1.46,3.53c0,1.32-0.53,2.609-1.46,3.54
+				C215.644,407.423,214.355,407.953,213.034,407.953z"/>
+		</g>
+	</g>
+	<g>
+		<g>
+			<path d="M177.474,396.063c-1.32,0-2.609-0.529-3.539-1.47c-0.931-0.93-1.461-2.22-1.461-3.53c0-1.319,0.53-2.609,1.461-3.539
+				c0.93-0.931,2.219-1.461,3.539-1.461c1.311,0,2.6,0.53,3.53,1.461c0.931,0.93,1.47,2.22,1.47,3.539c0,1.31-0.539,2.601-1.47,3.53
+				C180.074,395.534,178.794,396.063,177.474,396.063z"/>
+		</g>
+		<g>
+			<path d="M248.595,396.063c-1.32,0-2.6-0.529-3.541-1.47c-0.93-0.93-1.459-2.22-1.459-3.53c0-1.319,0.529-2.609,1.469-3.539
+				c0.931-0.931,2.211-1.461,3.531-1.461c1.319,0,2.609,0.53,3.539,1.461c0.93,0.93,1.461,2.22,1.461,3.539
+				c0,1.31-0.531,2.601-1.461,3.53C251.204,395.534,249.914,396.063,248.595,396.063z"/>
+		</g>
+	</g>
+	<path d="M338.39,419.187c-7.701-18.957-24.273-35.967-46.664-47.895c-21.449-11.426-46.833-17.774-73.691-18.476v-68.249
+		l14.207-13.611c1.388,0.117,3.28,0.225,5.557,0.225c8.423,0,24.712-1.543,39.17-11.881c17.102-12.228,26.797-32.753,28.814-61.006
+		c0.1-1.385-0.382-2.748-1.328-3.764c-0.945-1.016-2.272-1.593-3.658-1.593c-0.001,0-0.001,0-0.002,0
+		c-1.681,0-41.416,0.291-62.905,24.903c-10.419,11.934-14.667,27.404-12.674,45.999l-7.18,6.879V182.82l13.837-13.147
+		c1.378,0.115,3.256,0.222,5.517,0.222c0.002,0,0.001,0,0.002,0c8.43,0,24.733-1.544,39.215-11.876
+		c17.147-12.236,26.865-32.779,28.886-61.06c0.099-1.386-0.383-2.749-1.329-3.766c-0.946-1.015-2.271-1.591-3.658-1.591h-0.004
+		c-1.684,0.002-41.468,0.319-62.971,24.965c-10.415,11.936-14.662,27.399-12.675,45.979l-6.819,6.479V99.253
+		c13.487-9.059,21.295-20.61,23.211-34.376c4.334-31.152-23.436-61.954-24.619-63.25c-0.977-1.068-2.374-1.67-3.813-1.625
+		c-1.447,0.035-2.807,0.694-3.729,1.809c-19.701,23.784-27.692,45.714-23.753,65.18c3.722,18.382,17.015,28.794,22.703,32.495
+		v69.539l-6.819-6.48c1.987-18.578-2.26-34.042-12.674-45.977c-21.503-24.646-61.288-24.963-62.971-24.965h-0.005
+		c-1.387,0-2.711,0.576-3.657,1.591c-0.946,1.017-1.429,2.38-1.329,3.766c2.02,28.28,11.738,48.823,28.886,61.06
+		c14.481,10.333,30.786,11.876,39.216,11.876c2.261,0,4.139-0.106,5.517-0.222l13.837,13.147v87.899l-7.179-6.878
+		c1.992-18.595-2.255-34.065-12.674-45.999c-21.49-24.612-61.225-24.903-62.906-24.903h-0.001c-1.388,0-2.714,0.577-3.659,1.593
+		c-0.945-1.016-1.427,2.379-1.328,3.764c2.018,28.253,11.713,48.778,28.814,61.006c14.459,10.338,30.748,11.881,39.17,11.881
+		c2.277,0,4.17-0.108,5.558-0.225l14.206,13.61v68.25c-26.858,0.701-52.242,7.05-73.691,18.476
+		c-22.391,11.928-38.963,28.938-46.664,47.895c-0.626,1.542-0.444,3.294,0.484,4.674c0.93,1.381,2.484,2.208,4.148,2.208h241.445
+		c1.664,0,3.219-0.827,4.148-2.208C338.834,422.481,339.016,420.729,338.39,419.187z M245.394,224.45
+		c14.141-16.226,38.901-20.215,49.887-21.194c-5.347,46.247-33.238,56.436-52.665,57.763l30.263-28.993
+		c1.994-1.91,2.061-5.075,0.151-7.069c-1.91-1.995-5.076-2.063-7.069-0.151l-31.216,29.905
+		C234.855,242.616,238.411,232.462,245.394,224.45z M245.035,123.173c14.151-16.251,38.945-20.262,49.948-21.25
+		c-5.534,47.199-35.436,56.439-52.616,57.775l30.517-28.995c2.002-1.902,2.083-5.067,0.181-7.069c-1.901-2-5.065-2.082-7.068-0.181
+		l-31.61,30.035C234.486,141.374,238.042,131.202,245.035,123.173z M160.073,123.453c-2.002-1.9-5.166-1.82-7.068,0.181
+		c-1.902,2.002-1.822,5.167,0.18,7.069l30.516,28.995c-17.181-1.337-47.081-10.586-52.616-57.784
+		c10.982,0.972,35.719,4.95,49.921,21.226c7.011,8.035,10.577,18.217,10.677,30.347L160.073,123.453z M160.109,224.804
+		c-1.994-1.909-5.158-1.844-7.07,0.151c-1.91,1.994-1.842,5.159,0.152,7.069l30.263,28.993
+		c-19.428-1.326-47.322-11.516-52.665-57.771c10.967,0.963,35.67,4.921,49.859,21.172c7.002,8.019,10.568,18.182,10.677,30.292
+		L160.109,224.804z M195.133,65.007c-3.063-15.134,2.942-32.627,17.855-52.06c7.015,9.117,21.171,30.406,18.348,50.581
+		c-1.234,8.822-5.705,16.584-13.302,23.172V56.768c0-2.762-2.238-5-5-5s-5,2.238-5,5v30.118
+		C203.146,82.483,197.211,75.275,195.133,65.007z M100.227,416.069c17.45-31.73,62.417-53.322,112.808-53.322
+		s95.357,21.592,112.808,53.322H100.227z"/>
+</g>
+</svg>`,
+            ARBOL: `<?xml version="1.0" encoding="utf-8"?>
+<svg width="800px" height="800px" viewBox="0 0 1024 1024" class="icon" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M508.52 403.143c16.242 49.498 78.115 54.139 79.662 51.045 0.773-0.773-3.094-2.32-5.414-6.961v-8.508c5.414-26.296 4.64-34.804-3.094-47.952 0 0-5.414 3.867-11.601 3.094-4.64-0.773-8.508-3.094-10.828-5.414-2.32-2.32-3.867-6.187-3.094-12.375 0.773-6.961 5.414-10.054 5.414-10.054-20.882-18.562-34.804-4.64-40.218-2.32l-8.508-5.414c-3.094-3.094-5.414-6.961-5.414-6.961s-3.867-0.773-2.32 3.867l6.187 4.64c3.867 3.867 6.961 7.734 6.961 7.734s-14.695 14.695-7.734 35.577zM496.145 141.729c0 0 15.468 13.148 35.577 6.961 47.952-15.468 50.272-75.021 47.952-76.568-0.773-0.773-1.547 3.094-6.187 4.64h-8.508c-16.242-3.094-21.656-5.414-38.671 0.773-8.508 3.094-17.015 6.961-29.39 20.109-17.789 20.109-7.734 34.804-4.64 40.218l-5.414 8.508c-3.094 3.094-6.961 4.64-6.961 4.64s-0.773 3.867 3.867 2.32l3.867-6.187c4.64-2.32 8.508-5.414 8.508-5.414zM923.843 345.137c-1.547-0.773-3.094 5.414-11.601 8.508-3.867 1.547-10.054 0.773-14.695 0-27.843-5.414-38.671-9.281-68.060 1.547-15.468 5.414-30.163 11.601-51.045 35.577-30.937 35.577-13.148 61.1-7.734 70.381 0.773 1.547-3.867 9.281-9.281 14.695-5.414 6.187-11.601 9.281-11.601 9.281s-1.547 6.961 6.961 4.64c0.773 0 4.64-7.734 6.961-10.828 6.187-6.187 13.148-10.828 13.148-10.828s27.069 23.202 62.647 11.601c85.076-27.843 88.943-131.48 84.302-134.574zM262.574 399.276c-0.773-0.773 0.773-6.187 2.32-10.054 2.32-4.64 4.64-7.734 4.64-7.734s0-4.64-4.64-1.547l-2.32 7.734c-2.32 4.64-5.414 9.281-5.414 9.281s-20.882-7.734-39.444 6.187c-43.311 34.030-23.976 95.13-20.882 95.903 1.547 0 0.773-3.867 4.64-7.734l8.508-3.094c17.789-3.094 24.749-3.094 39.444-14.695 7.734-6.187 15.468-13.148 22.429-31.71 11.601-27.069-4.64-37.897-9.281-42.538zM691.819 529.983c-33.257 0-49.498 27.069-49.498 27.069s-6.961-2.32-13.921-5.414c-3.094-1.547-7.734-6.961-9.281-6.961-7.734 0.773-4.64 5.414-4.64 5.414s6.187 0.773 12.375 3.867c6.187 3.094 12.375 7.734 11.601 9.281-1.547 9.281-9.281 35.577 26.296 56.459 23.976 13.921 38.671 15.468 52.592 15.468 27.069 0.773 34.804-5.414 57.233-17.789 3.867-2.32 8.508-4.64 12.375-4.64 7.734 0.773 10.828 5.414 11.601 3.867 3.867-1.547-28.616-87.396-106.731-86.622zM411.069 193.548c-3.867-1.547-77.341 53.366-54.912 128.387 9.281 31.71 40.218 39.444 40.218 39.444s0 7.734-1.547 15.468c-0.773 3.867-3.867 9.281-3.867 10.828 2.32 6.961 6.961 2.32 6.961 2.32s-0.773-6.187 0.773-13.148c0.773-6.187 3.867-13.921 5.414-13.921 9.281-0.773 37.124-0.773 47.178-40.991 6.961-27.069 3.867-40.991 0-54.912-6.961-26.296-14.695-31.71-33.257-49.498-3.094-3.094-6.961-6.961-7.734-10.828-1.547-8.508 3.094-12.375 0.773-13.148zM765.293 293.319c6.187-0.773 10.054 3.094 10.828 2.32 2.32-3.094-35.577-71.154-101.317-61.873-27.843 3.867-37.897 28.616-37.897 28.616s-6.187-0.773-12.375-3.094l-8.508-4.64c-6.187 1.547-3.094 5.414-3.094 5.414s4.64 0 10.828 1.547c5.414 1.547 10.828 4.64 10.828 6.187 0 7.734-3.867 30.937 29.39 44.858 22.429 9.281 34.030 8.508 46.405 6.961 23.202-3.094 28.616-8.508 45.631-21.656 2.32-1.547 6.187-3.867 9.281-4.64zM565.752 533.077c21.656 4.64 36.35-10.828 36.35-10.828s4.64 2.32 8.508 5.414l5.414 5.414c5.414 0.773 3.867-3.094 3.867-3.094s-3.867-1.547-7.734-4.64c-3.094-3.094-6.961-6.961-6.187-7.734 2.32-5.414 11.601-22.429-9.281-40.991-13.921-13.148-23.202-15.468-32.483-17.789-17.789-4.64-23.976-1.547-40.218 3.867l-8.508 0.773c-4.64-1.547-6.187-5.414-6.961-4.64-3.867 2.32 5.414 63.42 57.233 74.248zM179.045 273.983c0 0 4.64-1.547 10.054-2.32h7.734c3.867-3.094 0-4.64 0-4.64s-3.867 1.547-8.508 2.32c-4.64 0.773-10.054 0-10.054-0.773-2.32-5.414-8.508-23.202-36.35-21.656-18.562 1.547-27.069 6.187-35.577 11.601-15.468 10.054-17.789 16.242-24.749 31.71l-4.64 6.961c-4.64 2.32-8.508 0.773-8.508 2.32 0 3.094 50.272 37.897 93.583 8.508 18.562-12.375 17.015-34.030 17.015-34.030zM442.779 461.149c0 0 1.547-4.64 4.64-9.281l5.414-5.414c0-5.414-3.094-3.094-3.094-3.094s-0.773 3.867-3.867 7.734c-2.32 3.867-6.187 7.734-6.961 6.961-6.187-1.547-22.429-8.508-39.444 12.375 3.094-30.163-16.242-42.538-23.202-48.725-1.547-1.547 0.773-10.054 3.094-17.015 3.094-6.961 7.734-12.375 7.734-12.375s-0.773-6.961-7.734-1.547c-0.773 0.773-1.547 8.508-3.094 12.375-3.094 8.508-7.734 15.468-7.734 15.468s-34.030-11.601-62.647 12.375c-68.060 57.233-34.030 154.683-28.616 155.456 2.32 0 0.773-6.187 6.961-12.375 3.094-3.094 9.281-4.64 13.921-5.414 27.843-5.414 39.444-5.414 62.647-26.296 7.734-6.961 15.468-14.695 23.202-27.069 0 10.828 3.094 17.015 8.508 29.39l2.32 8.508c-0.773 5.414-4.64 6.961-3.867 7.734 2.32 2.32 61.873-13.148 67.287-65.74 0.773-20.882-15.468-34.030-15.468-34.030zM307.432 306.467c0 0 0.773 4.64 0 10.054l-2.32 6.961c2.32 4.64 4.64 1.547 4.64 1.547s-0.773-3.867 0-8.508c0.773-4.64 2.32-9.281 3.094-9.281 6.187-0.773 24.749-2.32 30.163-30.163 3.094-18.562 0.773-27.843-2.32-37.124-6.187-17.789-11.601-20.882-23.976-31.71l-5.414-6.961c-1.547-4.64 0.773-7.734 0-8.508-3.094-0.773-49.498 39.444-30.937 88.943 6.187 20.882 27.069 24.749 27.069 24.749zM575.033 120.074c-3.094-0.773-41.764 47.952-14.695 92.81 11.601 19.335 32.483 19.335 32.483 19.335s1.547 4.64 1.547 10.054l-0.773 7.734c3.094 4.64 4.64 0.773 4.64 0.773s-1.547-3.867-1.547-8.508c0-4.64 0-10.054 1.547-10.054 6.187-2.32 23.976-6.961 23.976-34.804 0-19.335-3.867-27.843-9.281-36.35-9.281-16.242-15.468-18.562-30.163-27.069l-6.961-5.414c-1.547-4.64 0-7.734-0.773-8.508zM794.683 491.313c-22.429-1.547-34.804 15.468-34.804 15.468s-4.64-1.547-9.281-4.64l-5.414-5.414c-5.414 0-3.094 3.867-3.094 3.867s3.867 0.773 7.734 3.094c3.867 2.32 7.734 6.187 7.734 6.961-1.547 6.187-8.508 23.202 13.921 39.444 15.468 10.828 24.749 12.375 34.03 13.921 18.562 2.32 23.976-1.547 39.444-8.508l8.508-2.32c5.414 0.773 6.961 4.64 7.734 3.867 2.32-1.547-13.921-61.1-66.514-65.74zM565.752 355.192c8.508 17.015 16.242 22.429 23.976 27.843 15.468 10.054 21.656 9.281 38.671 10.828l8.508 2.32c3.867 3.094 3.867 6.961 5.414 6.961 3.094-0.773 15.468-61.1-29.39-88.943-18.562-11.601-37.897-2.32-37.897-2.32s-3.094-3.867-6.187-8.508l-2.32-6.961c-4.64-2.32-4.64 1.547-4.64 1.547s3.094 2.32 5.414 6.961c2.32 3.867 3.867 8.508 3.094 9.281-3.094 3.867-17.015 16.242-4.64 40.991zM523.988 298.732l-1.547 7.734c2.32 4.64 4.64 0.773 4.64 0.773s-0.773-3.867-0.773-8.508c0-4.64 1.547-9.281 2.32-10.054 6.187-1.547 24.749-4.64 27.069-32.483 1.547-18.562-1.547-27.843-5.414-36.35-7.734-17.015-13.148-20.109-27.069-29.39l-6.187-6.961c-2.32-4.64 0-7.734-0.773-8.508-3.094-0.773-45.631 43.311-23.202 91.263 9.281 20.109 30.937 22.429 30.937 22.429s0.773 4.64 0 10.054zM592.048 585.669c-0.773-0.773-1.547-6.961-0.773-11.601 0.773-5.414 3.094-9.281 3.094-9.281s-1.547-4.64-5.414 0v8.508c-0.773 6.187-3.094 11.601-3.094 11.601s-25.523-2.32-40.218 17.789c-35.577 48.725 4.64 107.505 7.734 107.505 1.547 0-0.773-4.64 3.094-9.281l8.508-5.414c17.789-8.508 24.749-10.054 36.35-27.069 6.187-9.281 11.601-18.562 13.921-40.218 3.094-32.483-17.015-39.444-23.202-42.538zM686.405 507.554c0 0 1.547 4.64 5.414 0v-8.508c0.773-6.187 3.094-10.828 3.094-10.828s25.523 3.867 40.991-16.242c37.124-47.178 0-107.505-3.094-107.505-1.547 0 0 4.64-3.094 9.281l-8.508 5.414c-17.789 7.734-25.523 9.281-37.897 26.296-6.961 8.508-12.375 17.789-15.468 39.444-4.64 31.71 15.468 39.444 21.656 42.538 0.773 0.773 0.773 6.961 0 11.601-0.773 4.64-3.094 8.508-3.094 8.508zM240.918 269.343c0 0 1.547 5.414 2.32 11.601l-0.773 8.508c3.867 4.64 5.414 0.773 5.414 0.773s-1.547-3.867-2.32-9.281c-0.773-4.64 0-10.828 1.547-11.601 6.187-2.32 27.069-8.508 26.296-40.218-0.773-21.656-6.187-30.937-11.601-40.218-10.828-17.789-17.789-20.882-34.804-29.39l-7.734-6.187c-3.094-5.414-0.773-9.281-2.32-9.281-3.094-0.773-47.178 55.686-14.695 106.731 13.148 19.335 38.671 18.562 38.671 18.562zM463.662 199.735c-4.64-4.64-6.961-9.281-6.961-9.281s17.015-18.562 10.054-43.311c-17.015-57.233-88.169-61.1-90.489-58.779-0.773 1.547 3.867 2.32 5.414 7.734 0.773 3.094 0 6.961-0.773 10.054-3.867 18.562-6.961 25.523 0 45.631 3.094 10.828 7.734 20.882 23.202 34.804 23.202 21.656 40.991 10.054 47.178 6.961 1.547-0.773 6.187 3.094 9.281 6.961 3.867 3.867 5.414 7.734 5.414 7.734s4.64 1.547 3.094-4.64l-5.414-3.867zM645.414 196.642c1.547 0.773 1.547 6.961 0 11.601-0.773 5.414-3.094 9.281-3.094 9.281s1.547 4.64 5.414 0v-8.508c0.773-6.187 3.094-11.601 3.094-11.601s12.375 1.547 24.749-4.64c0 2.32 0.773 4.64 0.773 6.187 0 1.547-6.961 6.187-12.375 8.508-6.961 2.32-12.375 3.094-12.375 3.094s-3.867 4.64 3.867 6.187c0.773 0 6.187-4.64 10.054-6.187 6.961-3.094 14.695-4.64 14.695-4.64s13.148 28.616 46.405 31.71c78.115 7.734 118.332-74.248 116.012-78.115-0.773-1.547-4.64 3.094-12.375 3.094-3.867 0-8.508-3.094-11.601-5.414-20.882-14.695-27.843-20.882-54.912-23.202-14.695-0.773-28.616-1.547-54.139 10.828-0.773 0.773-1.547 0.773-2.32 1.547 6.187-38.671-17.789-74.248-20.882-73.474-1.547 0 0 4.64-3.094 9.281l-8.508 5.414c-17.789 7.734-24.749 10.054-37.124 27.069-6.187 9.281-12.375 18.562-14.695 39.444-3.867 31.71 16.242 38.671 22.429 42.538zM217.716 384.581c6.961-8.508 13.148-17.789 17.015-38.671 5.414-31.71-13.921-40.218-20.109-43.311-0.773-0.773-0.773-6.961 0.773-11.601 1.547-5.414 3.867-9.281 3.867-9.281s-1.547-4.64-5.414 0l-0.773 8.508c-1.547 6.187-3.867 10.828-3.867 10.828s-24.749-4.64-41.764 14.695c-39.444 45.631-3.867 107.505-0.773 107.505 1.547 0 0-4.64 3.094-9.281l8.508-5.414c18.562-6.187 26.296-7.734 39.444-23.976z" fill="black"/>
+  <path d="M442.006 936.026l17.015-494.211-127.613-80.435-107.505 23.976 97.45-30.163-124.52-93.583 266.054 167.831 16.242-303.952 3.094 220.423 188.713-155.456-75.795 79.662 92.036 53.366-100.544-46.405-104.411 87.396 2.32 235.118 165.511-78.115-25.523-108.278 37.124 103.637 115.239-45.631-292.35 144.628 0.773 320.967h-43.311z" fill="black"/>
+</svg>`,
+            FRUTAL: `<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.2" baseProfile="tiny" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+	 x="0px" y="0px" viewBox="0 0 256 256" xml:space="preserve">
+<path id="XMLID_2_" d="M211.4,35.1l13.7-15.8l-9.1-7.9L178.2,55c-0.6-0.4-1.2-0.7-1.9-1c-0.5-0.1-0.5-0.1-0.5-0.1
+	s-66.2-39.3-111.4,23C32.4,121.1,53.6,157.3,8,194.5c-9.8,7.5-9.6,22.8-1.1,30.3c19.5,14.9,85.3,43.7,147.4,1.8
+	c62.6-42.3,59.9-92.5,53.3-123.5c-3.2-14.4-9.6-30.1-19.9-40.7l21.8-25.2c19,19.8,21.2,76.5,10,125.2c-10,43.5-31.7,78-54.6,91.2
+	c30.9,1.5,76-33.1,87.9-84.6C264.8,116.6,241.8,47.9,211.4,35.1z"/>
+</svg>`,
+            ORNAMENTAL: `<?xml version='1.0' encoding='iso-8859-1'?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 275.961 275.961" xmlns:xlink="http://www.w3.org/1999/xlink" enable-background="new 0 0 275.961 275.961">
+  <path d="m241.57,141.165c-1.227-1.122-2.503-2.169-3.8-3.182 1.299-1.013 2.572-2.065 3.8-3.188 23.117-21.134 23.708-53.794 23.722-55.174l.074-7.404-5.833-4.562c-1.077-0.844-26.774-20.606-57.64-15.881-5.591,0.856-10.941,2.444-16.053,4.716-0.453-2.729-1.066-5.438-1.886-8.12-9.152-29.954-38.392-44.519-39.632-45.123l-6.653-3.247-6.625,3.307c-1.226,0.612-30.113,15.324-39.104,45.228-0.79,2.629-1.386,5.282-1.826,7.954-5.11-2.27-10.457-3.857-16.046-4.713-30.873-4.727-56.563,15.037-57.64,15.881l-5.833,4.562 .074,7.404c0.014,1.38 0.604,34.04 23.722,55.174 1.228,1.123 2.502,2.175 3.8,3.188-1.298,1.013-2.573,2.06-3.8,3.181-23.117,21.134-23.708,53.794-23.722,55.174l-.074,7.404 5.833,4.562c0.963,0.754 21.577,16.61 47.972,16.61 3.148,0 6.379-0.226 9.668-0.729 5.591-0.856 10.941-2.444 16.052-4.715 0.453,2.729 1.066,5.438 1.886,8.12 9.153,29.954 38.393,44.519 39.633,45.123l6.653,3.248 6.625-3.307c1.226-0.612 30.112-15.324 39.104-45.227 0.791-2.629 1.386-5.283 1.826-7.955 5.11,2.27 10.458,3.857 16.047,4.713 3.291,0.504 6.519,0.729 9.668,0.729 26.393,0 47.009-15.856 47.972-16.61l5.833-4.562-.074-7.404c-0.015-1.381-0.606-34.041-23.723-55.175zm-35.323-59.706c10.974-1.744 21.509,2.292 28.058,5.71-1.418,7.315-4.848,18.14-13.114,25.61-7.303,6.601-17.645,9.658-30.761,9.116-2.389-7.774-6.459-14.818-11.789-20.703 8.1-11.461 17.381-18.106 27.606-19.733zm-93.126,56.521c0-13.707 11.152-24.859 24.859-24.859s24.859,11.152 24.859,24.859-11.152,24.859-24.859,24.859-24.859-11.151-24.859-24.859zm7.494-80.625c3.142-10.67 11.323-18.449 17.224-22.894 5.942,4.378 14.182,12.057 17.426,22.676 2.563,8.389 1.55,17.745-2.988,27.885-4.561-1.233-9.351-1.901-14.296-1.901-4.949,0-9.743,0.67-14.307,1.904-4.484-10.028-5.52-19.311-3.059-27.67zm-51.088,24.075c10.3,1.577 19.644,8.234 27.794,19.762-5.33,5.885-9.401,12.929-11.79,20.703-13.116,0.541-23.456-2.515-30.76-9.116-8.278-7.481-11.706-18.326-13.119-25.622 6.498-3.397 16.932-7.404 27.875-5.727zm.187,113.072c-10.973,1.746-21.509-2.292-28.058-5.71 1.418-7.315 4.848-18.14 13.114-25.61 7.303-6.601 17.646-9.659 30.76-9.116 2.389,7.774 6.46,14.818 11.79,20.704-8.101,11.46-17.382,18.105-27.606,19.732zm85.631,24.104c-3.141,10.669-11.322,18.448-17.223,22.892-5.942-4.378-14.182-12.057-17.427-22.676-2.563-8.388-1.55-17.745 2.988-27.884 4.561,1.233 9.351,1.902 14.297,1.902 4.949,0 9.743-0.67 14.307-1.904 4.483,10.027 5.519,19.311 3.058,27.67zm51.089-24.075c-10.3-1.577-19.645-8.234-27.794-19.763 5.33-5.885 9.4-12.929 11.789-20.703 13.115-0.543 23.457,2.515 30.761,9.116 8.278,7.481 11.706,18.326 13.119,25.622-6.499,3.399-16.934,7.405-27.875,5.728z"/>
+</svg>`,
+            PALMERA: `<svg viewBox="0 0 64 64" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M34,58V24.6c0.6-0.2,1.2-0.5,1.7-0.9c2.6-2,4.3-5,4.3-8.4c0-0.2,0-0.4,0-0.6c-0.2-4.6-3.9-8.2-8.5-8.2 c-4.4,0-8,3.4-8.4,7.7c0,0.1-0.1,0.3-0.1,0.4c0,3.3,1.6,6.3,4.1,8.3c0.5,0.4,1.1,0.7,1.7,0.9V58h-6V25c-2.1-1.2-3.8-2.9-5-5 c-1.5-2.6-2.2-5.6-2-8.7C16.3,5.2,20.4,1.9,25.8,2c5.6,0.1,10.3,4,10.8,9.5c0.2,3.1-0.5,6.1-2,8.7c-1.2,2.1-2.9,3.8-5,5V58H34z"/><path d="M56,32c0,1.9-0.3,3.8-0.8,5.6L52,32l3.2-5.6C55.7,28.2,56,30.1,56,32z M8,32c0-1.9,0.3,3.8,0.8-5.6L12,32l-3.2,5.6 C8.3,35.8,8,33.9,8,32z M48.4,48.4C44.7,52.1,38.6,54,32,54s-12.7-1.9-16.4-5.6L18,46l-2.4,4.1c1.7,1.5,3.6,2.7,5.7,3.6 C24.5,55,28.1,56,32,56s7.5-1,10.7-2.4c2.1-0.9,4-2.1,5.7-3.6L46,46L48.4,48.4z M18,18l-2.4-4.1C17.3,12.4,19.2,11.1,21.3,10.3 C24.5,9,28.1,8,32,8s7.5,1,10.7,2.4c2.1,0.9,4,2.1,5.7,3.6L46,18L48.4,13.9C44.7,10.2,38.6,8.3,32,8.3S19.3,10.2,15.6,13.9 L18,18z"/></svg>`,
+            ARBUSTO: `<svg viewBox="0 0 64 64" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M50,30H40V20c0-4.4-3.6-8-8-8s-8,3.6-8,8v10H14c-2.2,0-4,1.8-4,4v12c0,2.2,1.8,4,4,4h6v8h12v-8h6c2.2,0,4-1.8,4-4 V34C54,31.8,52.2,30,50,30z M24,46H18V38h6V46z M38,46h-8V20c0-1.1,0.9-2,2-2s2,0.9,2,2v26H38z M46,46h-4V38h4V46z"/></svg>`,
+            HIERBA: `<svg viewBox="0 0 64 64" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M20,58C16.7,58,14,55.3,14,52V22c4.4,0,8-3.6,8-8V8h4v6c0,4.4,3.6,8,8,8h12c1.1,0,2-0.9,2-2s-0.9-2-2-2H34 c-6.6,0-12-5.4-12-12V2H18C16.9,2,16,2.9,16,4v10c-2.2,0-4.2,0.9-5.7,2.3C8.8,17.8,8,19.8,8,22v30c0,6.6,5.4,12,12,12h30 c2.2,0,4-1.8,4-4s-1.8-4-4-4H20z"/><path d="M52,28H38c-2.2,0-4,1.8-4,4v20c0,2.2,1.8,4,4,4h14c2.2,0,4-1.8,4-4V32C56,29.8,54.2,28,52,28z M52,48H42V36h10V48z"/></svg>`,
+            MEDICINAL: `<?xml version="1.0" encoding="iso-8859-1"?>
+<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 489.794 489.794" style="enable-background:new 0 0 489.794 489.794;" xml:space="preserve">
+<g>
+	<path d="M481.925,213.222c-61.4-50-120.6-55.8-150-54.7c-0.1-0.1-0.2-0.2-0.3-0.3c1.1-29.2-4.6-88.7-54.9-150.3
+		c-7.3-9.3-20.7-10.4-29-3.1c-9.3,7.3-10.4,20.7-3.1,29c56,69.4,45.6,132.7,44.6,135.8c-0.2,0.8-0.3,1.6-0.3,2.4l-62.2,62
+		c-3.8-31.8-16.6-76-53.7-121.5c-7.3-9.3-20.7-10.4-29-3.1c-9.3,7.3-10.4,20.7-3.1,29c51,63.3,46.9,117,44.7,136.7l-56.2,56.2
+		c-3.6-31.9-16.3-76.5-53.8-122.4c-7.3-9.3-20.7-10.4-29-3.1c-9.3,7.3-10.4,20.7-3.1,29c48.6,59.1,47.4,109.2,46,136.4l-83.3,83.3
+		c-8.3,8.3-8.3,20.7,0,29s20.7,8.3,29,0l80.8-80.8c16.8-4.6,76.5-6.8,139.1,43.5c8.3,7.2,21.8,6.2,29-3.2c7.2-8.3,6.2-21.8-3.1-29
+		c-46-37.5-90.7-50.1-122.6-53.6l54.1-54.1c16.8-4.6,76.5-6.8,139.1,43.5c8.3,7.2,21.8,6.2,29-3.2c7.2-8.3,6.2-21.8-3.1-29
+		c-46-37.5-90.7-50.1-122.6-53.6l62.2-62.2c16.8-4.6,76.5-6.8,139.1,43.5c8.3,7.2,21.8,6.2,29-3.2
+		C492.225,233.922,491.225,220.422,481.925,213.222z"/>
+</g>
+</svg>`,
+            AROMATICA: `<svg viewBox="0 0 64 64" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M32,12c-8.8,0-16,7.2-16,16s7.2,16,16,16s16-7.2,16-16S40.8,12,32,12z M32,40c-6.6,0-12-5.4-12-12s5.4-12,12-12 s12,5.4,12,12S38.6,40,32,40z"/><path d="M32,4c-4.6,0-8.8,1.6-12.2,4.3l1.4,1.4C24.2,7.7,28,6,32,6s7.8,1.7,10.8,3.7l1.4-1.4C40.8,5.6,36.6,4,32,4z"/><path d="M50.5,13.7l-1.4,1.4c2,3,3.7,6.2,3.7,9.8c0,3.7-1.7,6.8-3.7,9.8l1.4,1.4c 2.7-3.4,4.3-7.6,4.3-12.2S53.2,17.1,50.5,13.7z"/><path d="M13.5,13.7c-2.7,3.4-4.3,7.6-4.3,12.2s1.6,8.8,4.3,12.2l1.4-1.4c-2-3-3.7-6.2-3.7-9.8c0-3.7,1.7-6.8,3.7-9.8L13.5,13.7z"/><path d="M32,52c4.6,0,8.8-1.6,12.2-4.3l-1.4-1.4C39.8,48.3,36,50,32,50s-7.5-1.7-10.7-3.7l-1.4,1.4C23.2,50.4,27.4,52,32,52z"/></svg>`
+        };
+
+        // Styles for filter buttons
+        const filterButtonStyles = {
+            TODAS: { name: "Todas", iconKey: "TODAS", bgColor: "bg-slate-500", textColor: "text-white", borderColor: "border-slate-600", ringColor: "ring-slate-600", cardButtonTextColor: "text-slate-700" },
+            FORESTAL: { name: "Forestales", iconKey: "ARBOL", bgColor: "bg-emerald-600", textColor: "text-white", borderColor: "border-emerald-700", ringColor: "ring-emerald-700", cardButtonTextColor: "text-emerald-700" },
+            FRUTAL: { name: "Frutales", iconKey: "FRUTAL", bgColor: "bg-amber-500", textColor: "text-white", borderColor: "border-amber-600", ringColor: "ring-amber-600", cardButtonTextColor: "text-amber-700" },
+            ORNAMENTAL: { name: "Ornamentales", iconKey: "ORNAMENTAL", bgColor: "bg-yellow-400", textColor: "text-yellow-800", borderColor: "border-yellow-500", ringColor: "ring-yellow-500", cardButtonTextColor: "text-yellow-700" },
+            AROMATICA_MEDICINAL: { name: "Arom./Medic.", iconKey: "MEDICINAL", bgColor: "bg-sky-500", textColor: "text-white", borderColor: "border-sky-600", ringColor: "ring-sky-600", cardButtonTextColor: "text-sky-700" }
+        };
+
+        // Plant data
+        const plantData = [
+            { no: 1, nombre_comun: "Acacia amarilla", nombre_cientifico: "Senna spectabilis", familia: "Fabaceae", clasificacion_csv: "Forestal; Ornamental", categoria_principal_card_style: "ARBOL", dato_curioso: "Aunque hermosa por sus flores amarillas, puede ser invasora en algunos ecosistemas. Sus hojas compuestas se pliegan de forma sensible durante la noche o al tacto.", image_url: "https://www.google.com/search?q=Senna+spectabilis+Acacia+amarilla+árbol+flores+Nicaragua+bosque+seco&udm=2" },
+            { no: 2, nombre_comun: "Aguacate", nombre_cientifico: "Persea americana", familia: "Lauraceae", clasificacion_csv: "Frutal", categoria_principal_card_style: "FRUTAL", dato_curioso: "¡El aguacate es una baya con una sola semilla grande! Originario de Mesoamérica, es apreciado por su pulpa cremosa y nutritiva.", image_url: "https://www.google.com/search?q=Persea+americana+Aguacate+árbol+fruto+Nicaragua&udm=2" },
+            { no: 3, nombre_comun: "Amapola (ornamental)", nombre_cientifico: "Hibiscus × rosa‑sinensis", familia: "Malvaceae", clasificacion_csv: "Ornamental", categoria_principal_card_style: "ARBUSTO", dato_curioso: "Sus llamativas flores, a menudo de un rojo intenso, son un imán para los colibríes y pueden usarse para hacer té.", image_url: "https://www.google.com/search?q=Hibiscus+rosa-sinensis+Amapola+ornamental+arbusto+flores+Nicaragua&udm=2" },
+            { no: 4, nombre_comun: "Caña fístula", nombre_cientifico: "Cassia fistula", familia: "Fabaceae", clasificacion_csv: "Forestal; Ornamental", categoria_principal_card_style: "ARBOL", dato_curioso: "Apodado 'lluvia de oro', este árbol se cubre de espectaculares racimos de flores amarillas que cuelgan como cortinas.", image_url: "https://www.google.com/search?q=Cassia+fistula+Caña+fístula+árbol+flores+Nicaragua+bosque+seco&udm=2" },
+            { no: 5, nombre_comun: "Caoba del Pacífico", nombre_cientifico: "Swietenia humilis", familia: "Meliaceae", clasificacion_csv: "Forestal", categoria_principal_card_style: "ARBOL", dato_curioso: "Su madera rojiza es muy valiosa y resistente, pero lamentablemente, es una especie amenazada debido a la sobreexplotación.", image_url: "https://www.google.com/search?q=Swietenia+humilis+Caoba+del+Pacífico+árbol+madera+Nicaragua+bosque+seco&udm=2" },
+            { no: 6, nombre_comun: "Carao", nombre_cientifico: "Cassia grandis", familia: "Fabaceae", clasificacion_csv: "Forestal; Medicinal", categoria_principal_card_style: "ARBOL", dato_curioso: "Las largas vainas de este árbol contienen una pulpa oscura y dulce, usada tradicionalmente para hacer 'jarabe de carao', que se cree combate la anemia.", image_url: "https://www.google.com/search?q=Cassia+grandis+Carao+árbol+vainas+Nicaragua+bosque+seco&udm=2" },
+            { no: 7, nombre_comun: "Cedro real", nombre_cientifico: "Cedrela odorata", familia: "Meliaceae", clasificacion_csv: "Forestal", categoria_principal_card_style: "ARBOL", dato_curioso: "La madera de cedro real tiene un aroma distintivo que actúa como repelente natural de insectos, por eso se usa en armarios.", image_url: "https://www.google.com/search?q=Cedrela+odorata+Cedro+real+árbol+madera+Nicaragua+bosque+seco&udm=2" },
+            { no: 8, nombre_comun: "Cortez amarillo", nombre_cientifico: "Handroanthus ochraceus", familia: "Bignoniaceae", clasificacion_csv: "Forestal; Ornamental", categoria_principal_card_style: "ARBOL", dato_curioso: "Este árbol ofrece un espectáculo de flores amarillas brillantes durante la estación seca, a menudo antes de que aparezcan sus hojas.", image_url: "https://www.google.com/search?q=Handroanthus+ochraceus+Cortez+amarillo+árbol+flores+Nicaragua+bosque+seco&udm=2" },
+            { no: 9, nombre_comun: "Genízaro / Cenízaro", nombre_cientifico: "Samanea saman", familia: "Fabaceae", clasificacion_csv: "Forestal", categoria_principal_card_style: "ARBOL", dato_curioso: "Sus hojas se cierran durante la noche y en días lluviosos, lo que le ha valido el apodo de 'árbol de la lluvia'.", image_url: "https://www.google.com/search?q=Samanea+saman+Genízaro+Cenízaro+árbol+Nicaragua+bosque+seco&udm=2" },
+            { no: 10, nombre_comun: "Guanábana", nombre_cientifico: "Annona muricata", familia: "Annonaceae", clasificacion_csv: "Frutal", categoria_principal_card_style: "FRUTAL", dato_curioso: "El fruto de la guanábana es grande, con una cáscara verde y espinosa, y una pulpa blanca y jugosa con un sabor único, mezcla de fresa y piña.", image_url: "https://www.google.com/search?q=Annona+muricata+Guanábana+árbol+fruto+Nicaragua&udm=2" },
+            { no: 11, nombre_comun: "Guanacaste negro", nombre_cientifico: "Enterolobium cyclocarpum", familia: "Fabaceae", clasificacion_csv: "Forestal", categoria_principal_card_style: "ARBOL", dato_curioso: "Sus distintivas vainas de semillas tienen forma de oreja humana, ¡de ahí uno de sus nombres comunes en inglés 'Elephant Ear Tree'!", image_url: "https://www.google.com/search?q=Enterolobium+cyclocarpum+Guanacaste+negro+árbol+semillas+Nicaragua+bosque+seco&udm=2" },
+            { no: 12, nombre_comun: "Guapinol", nombre_cientifico: "Hymenaea courbaril", familia: "Fabaceae", clasificacion_csv: "Forestal", categoria_principal_card_style: "ARBOL", dato_curioso: "La pulpa harinosa dentro de sus duras vainas es comestible y tiene un olor particular. El árbol produce una resina llamada copal, usada como incienso.", image_url: "https://www.google.com/search?q=Hymenaea+courbaril+Guapinol+árbol+resina+Nicaragua+bosque+seco&udm=2" },
+            { no: 13, nombre_comun: "Guayaba", nombre_cientifico: "Psidium guajava", familia: "Myrtaceae", clasificacion_csv: "Frutal", categoria_principal_card_style: "FRUTAL", dato_curioso: "¡La guayaba contiene mucha más vitamina C que una naranja! Sus hojas también se usan para hacer tés medicinales.", image_url: "https://www.google.com/search?q=Psidium+guajava+Guayaba+árbol+fruto+Nicaragua&udm=2" },
+            { no: 14, nombre_comun: "Guayacán", nombre_cientifico: "Guaiacum sanctum", familia: "Zygophyllaceae", clasificacion_csv: "Forestal; Ornamental", categoria_principal_card_style: "ARBOL", dato_curioso: "Su madera es tan densa que no flota en el agua. Produce una resina con propiedades medicinales.", image_url: "https://www.google.com/search?q=Guaiacum+sanctum+Guayacán+árbol+flores+Nicaragua+bosque+seco&udm=2" },
+            { no: 15, nombre_comun: "Ixora", nombre_cientifico: "Ixora coccinea", familia: "Rubiaceae", clasificacion_csv: "Ornamental", categoria_principal_card_style: "ARBUSTO", dato_curioso: "Conocida como 'llama de la jungla', sus brillantes racimos de flores tubulares son un festín para las mariposas.", image_url: "https://www.google.com/search?q=Ixora+coccinea+Ixora+arbusto+flores+Nicaragua&udm=2" },
+            { no: 16, nombre_comun: "Jazmín del Cabo", nombre_cientifico: "Gardenia jasminoides", familia: "Rubiaceae", clasificacion_csv: "Ornamental", categoria_principal_card_style: "ARBUSTO", dato_curioso: "Sus flores blancas y cerosas desprenden una fragancia dulce e intensa, especialmente durante la tarde y noche.", image_url: "https://www.google.com/search?q=Gardenia+jasminoides+Jazmín+del+Cabo+arbusto+flores+Nicaragua&udm=2" },
+            { no: 17, nombre_comun: "Jiñocuabo / Indio desnudo", nombre_cientifico: "Bursera simaruba", familia: "Burseraceae", clasificacion_csv: "Forestal", categoria_principal_card_style: "ARBOL", dato_curioso: "Su corteza lisa y de color cobrizo se pela en láminas delgadas, parecidas al papel, ¡lo que le da el apodo de 'árbol turista' porque siempre está pelándose!", image_url: "https://www.google.com/search?q=Bursera+simaruba+Jiñocuabo+Indio+desnudo+árbol+corteza+Nicaragua+bosque+seco&udm=2" },
+            { no: 18, nombre_comun: "Jocote jobo", nombre_cientifico: "Spondias purpurea", familia: "Anacardiaceae", clasificacion_csv: "Frutal", categoria_principal_card_style: "FRUTAL", dato_curioso: "Estos frutos, parecidos a pequenas ciruelas, a menudo se comen verdes con sal o maduros y dulces. ¡Son muy populares!", image_url: "https://www.google.com/search?q=Spondias+purpurea+Jocote+jobo+árbol+fruto+Nicaragua&udm=2" },
+            { no: 19, nombre_comun: "Laurel negro", nombre_cientifico: "Cordia alliodora", familia: "Boraginaceae", clasificacion_csv: "Forestal", categoria_principal_card_style: "ARBOL", dato_curioso: "Sus pequenas flores blancas son muy fragantes y atraen a una gran cantidad de abejas y otros insectos polinizadores.", image_url: "https://www.google.com/search?q=Cordia+alliodora+Laurel+negro+árbol+Nicaragua+bosque+seco&udm=2" },
+            { no: 20, nombre_comun: "Limón mandarina", nombre_cientifico: "Citrus × limonia", familia: "Rutaceae", clasificacion_csv: "Frutal", categoria_principal_card_style: "FRUTAL", dato_curioso: "Este cítrico es un híbrido, probablemente entre una mandarina y un limón o cidro, ¡combinando lo mejor de ambos mundos!", image_url: "https://www.google.com/search?q=Citrus+limonia+Limón+mandarina+árbol+fruto+Nicaragua&udm=2" },
+            { no: 21, nombre_comun: "Madero negro", nombre_cientifico: "Gliricidia sepium", familia: "Fabaceae", clasificacion_csv: "Forestal", categoria_principal_card_style: "ARBOL", dato_curioso: "Es un árbol multiusos: sus hojas son forraje para animales, mejora el suelo fijando nitrógeno y sus flores rosadas son comestibles.", image_url: "https://www.google.com/search?q=Gliricidia+sepium+Madero+negro+árbol+flores+Nicaragua+bosque+seco&udm=2" },
+            { no: 22, nombre_comun: "Madroño", nombre_cientifico: "Calycophyllum candidissimum", familia: "Rubiaceae", clasificacion_csv: "Forestal; Ornamental", categoria_principal_card_style: "ARBOL", dato_curioso: "¡Es el Árbol Nacional de Nicaragua! Se cubre de fragantes flores blancas que parecen nieve y su madera es muy apreciada.", image_url: "https://www.google.com/search?q=Calycophyllum+candidissimum+Madroño+árbol+flor+nacional+Nicaragua+bosque+seco&udm=2" },
+            { no: 23, nombre_comun: "Malinche de jardín", nombre_cientifico: "Caesalpinia pulcherrima", familia: "Fabaceae", clasificacion_csv: "Ornamental", categoria_principal_card_style: "ARBUSTO", dato_curioso: "También conocido como 'barba de chivo' o 'flor de pavo real', sus flores tienen largos estambres rojos que parecen plumas.", image_url: "https://www.google.com/search?q=Caesalpinia+pulcherrima+Malinche+de+jardín+arbusto+flores+Nicaragua&udm=2" },
+            { no: 24, nombre_comun: "Malinche gigante", nombre_cientifico: "Delonix regia", familia: "Fabaceae", clasificacion_csv: "Ornamental; Forestal", categoria_principal_card_style: "ARBOL", dato_curioso: "Originario de Madagascar, este árbol es famoso por su espectacular floración roja o anaranjada que cubre toda la copa.", image_url: "https://www.google.com/search?q=Delonix+regia+Malinche+gigante+árbol+flores+Nicaragua&udm=2" },
+            { no: 25, nombre_comun: "Mamón", nombre_cientifico: "Melicoccus bijugatus", familia: "Sapindaceae", clasificacion_csv: "Frutal", categoria_principal_card_style: "FRUTAL", dato_curioso: "Su fruto, también llamado quenepa o limoncillo, tiene una cáscara verde y delgada que se rompe para revelar una pulpa jugosa y agridulce.", image_url: "https://www.google.com/search?q=Melicoccus+bijugatus+Mamón+árbol+fruto+Nicaragua&udm=2" },
+            { no: 26, nombre_comun: "Mango", nombre_cientifico: "Mangifera indica", familia: "Anacardiaceae", clasificacion_csv: "Frutal", categoria_principal_card_style: "FRUTAL", dato_curioso: "El mango es una de las frutas tropicales más consumidas en el mundo y ¡hay más de 500 variedades diferentes!", image_url: "https://www.google.com/search?q=Mangifera+indica+Mango+árbol+fruto+Nicaragua&udm=2" },
+            { no: 27, nombre_comun: "Marañón", nombre_cientifico: "Anacardium occidentale", familia: "Anacardiaceae", clasificacion_csv: "Frutal", categoria_principal_card_style: "FRUTAL", dato_curioso: "La 'nuez de marañón' crece fuera del pseudofruto carnoso y debe ser tostada antes de comerla para eliminar sustancias irritantes.", image_url: "https://www.google.com/search?q=Anacardium+occidentale+Marañón+árbol+fruto+nuez+Nicaragua&udm=2" },
+            { no: 28, nombre_comun: "Nancite", nombre_cientifico: "Byrsonima crassifolia", familia: "Malpighiaceae", clasificacion_csv: "Frutal", categoria_principal_card_style: "FRUTAL", dato_curioso: "Los pequeños frutos amarillos del nancite tienen un aroma penetrante y un sabor agridulce, ¡muy usados para hacer chicha y helados!", image_url: "https://www.google.com/search?q=Byrsonima+crassifolia+Nancite+árbol+fruto+Nicaragua&udm=2" },
+            { no: 29, nombre_comun: "Naranja dulce", nombre_cientifico: "Citrus sinensis", familia: "Rutaceae", clasificacion_csv: "Frutal", categoria_principal_card_style: "FRUTAL", dato_curioso: "La naranja dulce es en realidad un antiguo híbrido, ¡posiblemente entre una toronja y una mandarina!", image_url: "https://www.google.com/search?q=Citrus+sinensis+Naranja+dulce+árbol+fruto+Nicaragua&udm=2" },
+            { no: 30, nombre_comun: "Palmera real", nombre_cientifico: "Roystonea regia", familia: "Arecaceae", clasificacion_csv: "Ornamental", categoria_principal_card_style: "PALMERA", dato_curioso: "Originaria de Cuba, esta majestuosa palmera puede alcanzar grandes alturas y es un símbolo de los paisajes tropicales.", image_url: "https://www.google.com/search?q=Roystonea+regia+Palmera+real+palmera+Nicaragua&udm=2" },
+            { no: 31, nombre_comun: "Palmera robeliana", nombre_cientifico: "Phoenix roebelenii", familia: "Arecaceae", clasificacion_csv: "Ornamental", categoria_principal_card_style: "PALMERA", dato_curioso: "Es una palmera datilera enana, muy popular en jardinería por su tamaño manejable y su aspecto elegante y plumoso.", image_url: "https://www.google.com/search?q=Phoenix+roebelenii+Palmera+robeliana+palmera+Nicaragua&udm=2" },
+            { no: 32, nombre_comun: "Sacuanjoche", nombre_cientifico: "Plumeria rubra", familia: "Apocynaceae", clasificacion_csv: "Ornamental", categoria_principal_card_style: "ARBUSTO", dato_curioso: "¡La Flor Nacional de Nicaragua! Sus flores son increíblemente fragantes, sobre todo al atardecer, y vienen en muchos colores.", image_url: "https://www.google.com/search?q=Plumeria+rubra+Sacuanjoche+arbusto+flor+nacional+Nicaragua&udm=2" },
+            { no: 33, nombre_comun: "Zacate limón", nombre_cientifico: "Cymbopogon citratus", familia: "Poaceae", clasificacion_csv: "Aromática; Medicinal", categoria_principal_card_style: "HIERBA", dato_curioso: "Esta hierba tiene un fuerte aroma y sabor a limón debido al citral, un compuesto que también ayuda a repeler mosquitos.", image_url: "https://www.google.com/search?q=Cymbopogon+citratus+Zacate+limón+planta+Nicaragua&udm=2" }
+        ];
+
+        // DOM Elements
+        const plantGrid = document.getElementById('plantGrid');
+        const filterMenu = document.getElementById('filterMenu');
+        const totalSpeciesTitleContainer = document.getElementById('totalSpeciesTitleContainer');
+        const segmentedBarDiv = document.getElementById('segmentedBar');
+        const explanatoryNoteContainer = document.getElementById('explanatoryNoteContainer');
+        let currentFilter = 'TODAS';
+
+        const categoryCounts = {
+            FORESTAL: 0, FRUTAL: 0, ORNAMENTAL: 0, AROMATICA_MEDICINAL: 0, TOTAL: 0
+        };
+
+        function assignFilterGroupAndCount() {
+            categoryCounts.FORESTAL = 0; categoryCounts.FRUTAL = 0; categoryCounts.ORNAMENTAL = 0;
+            categoryCounts.AROMATICA_MEDICINAL = 0; categoryCounts.TOTAL = 0;
+            plantData.forEach(plant => {
+                const csvClassLower = plant.clasificacion_csv.toLowerCase();
+                let assignedGroup = null;
+                if (csvClassLower.includes("frutal")) assignedGroup = "FRUTAL";
+                else if (csvClassLower.includes("forestal")) assignedGroup = "FORESTAL";
+                else if (csvClassLower.includes("ornamental")) assignedGroup = "ORNAMENTAL";
+                else if (csvClassLower.includes("aromática") || csvClassLower.includes("medicinal")) assignedGroup = "AROMATICA_MEDICINAL";
+                else {
+                    const principalCatCardStyle = plant.categoria_principal_card_style ? plant.categoria_principal_card_style.toUpperCase() : "ARBOL";
+                    if (principalCatCardStyle === "ARBOL") assignedGroup = "FORESTAL";
+                    else if (principalCatCardStyle === "FRUTAL") assignedGroup = "FRUTAL";
+                    else if (["ORNAMENTAL", "ARBUSTO", "PALMERA"].includes(principalCatCardStyle)) assignedGroup = "ORNAMENTAL";
+                    else if (["HIERBA", "MEDICINAL", "AROMATICA"].includes(principalCatCardStyle)) assignedGroup = "AROMATICA_MEDICINAL";
+                    else assignedGroup = "FORESTAL";
+                }
+                plant.filterGroupForMenu = assignedGroup;
+                if (categoryCounts[assignedGroup] !== undefined) categoryCounts[assignedGroup]++;
+            });
+            categoryCounts.TOTAL = plantData.length;
+        }
+
+        function renderHeaderStatsAndSegmentedBar() {
+            if (totalSpeciesTitleContainer) {
+                totalSpeciesTitleContainer.innerHTML = `<h2 class="text-2xl md:text-3xl font-bold text-white tracking-wide">Total de Especies: ${categoryCounts.TOTAL}</h2>`;
+            }
+
+            if (explanatoryNoteContainer) {
+                // Improved formatting for the explanatory note
+                explanatoryNoteContainer.innerHTML = `<strong>Nota:</strong> Para identificar las plantas, observa el orden: <strong>Nombre Común</strong> (el que más usamos), luego su <i>Nombre Científico</i> (¡su nombre oficial de ciencia!) | y al final la <strong>Familia</strong> (su gran grupo).`;
+            }
+
+            segmentedBarDiv.innerHTML = '';
+            if (categoryCounts.TOTAL === 0) return;
+
+            const filterOrder = ["FORESTAL", "FRUTAL", "ORNAMENTAL", "AROMATICA_MEDICINAL"];
+            const minSegmentPercentage = 8;
+            let totalPercentageAccountedForByMins = 0;
+            let categoriesWithValue = 0;
+            let categoriesAboveMin = 0;
+            let sumOfPercentagesForAboveMin = 0;
+
+            const calculatedData = filterOrder.map(key => {
+                const count = categoryCounts[key];
+                const actualPercentage = (count / categoryCounts.TOTAL) * 100;
+                return { key, count, actualPercentage, styleInfo: filterButtonStyles[key] };
+            }).filter(item => item.count > 0);
+
+            calculatedData.forEach(item => {
+                if (item.count > 0) categoriesWithValue++;
+                if (item.actualPercentage < minSegmentPercentage && item.count > 0) {
+                    totalPercentageAccountedForByMins += minSegmentPercentage;
+                } else if (item.count > 0) {
+                    categoriesAboveMin++;
+                    sumOfPercentagesForAboveMin += item.actualPercentage;
+                }
+            });
+
+            let remainingPercentagePool = 100 - totalPercentageAccountedForByMins;
+            if (remainingPercentagePool < 0) remainingPercentagePool = 0;
+
+            calculatedData.forEach(item => {
+                const { key, count, actualPercentage, styleInfo } = item;
+                if (!styleInfo) return;
+
+                let visualPercentage;
+                if (actualPercentage < minSegmentPercentage) {
+                    visualPercentage = minSegmentPercentage;
+                } else {
+                    if (sumOfPercentagesForAboveMin > 0) {
+                        visualPercentage = (actualPercentage / sumOfPercentagesForAboveMin) * remainingPercentagePool;
+                    } else if (categoriesWithValue > 0) {
+                        visualPercentage = 100 / categoriesWithValue;
+                    } else {
+                        visualPercentage = 0;
+                    }
+                }
+                if (visualPercentage < 0) visualPercentage = minSegmentPercentage;
+
+                const segment = document.createElement('div');
+                // Default classes for each segment, include positioning and base z-index
+                segment.className = `segmented-bar-segment ${styleInfo.bgColor} ${styleInfo.textColor} flex items-center justify-center relative z-0`;
+                segment.style.width = `${visualPercentage}%`;
+                segment.dataset.segmentFilter = key;
+
+                // Create icon element
+                const segmentIconContainer = document.createElement('div');
+                segmentIconContainer.className = 'segment-icon-container';
+                segmentIconContainer.innerHTML = svgIcons[styleInfo.iconKey] || svgIcons.ARBOL;
+
+                const segmentStatsText = document.createElement('span');
+                segmentStatsText.className = 'segment-stats-text';
+                const originalRoundedPercentage = Math.round(actualPercentage);
+
+                // Updated logic to remove colons and adjust text based on available space
+                if (count > 0) {
+                    if (visualPercentage < 9) {
+                        segmentStatsText.textContent = `${originalRoundedPercentage}%`;
+                        if (visualPercentage < 6) segmentStatsText.textContent = `${count}`;
+                    } else if (visualPercentage < 18) {
+                        segmentStatsText.textContent = `${count} (${originalRoundedPercentage}%)`; // Show both if space allows
+                    } else {
+                        segmentStatsText.textContent = `${count} (${originalRoundedPercentage}%)`;
+                    }
+                } else {
+                    segmentStatsText.textContent = ''; // No text if count is 0
+                }
+
+                // Clear segment before appending
+                segment.innerHTML = '';
+                segment.appendChild(segmentIconContainer);
+                segment.appendChild(segmentStatsText);
+                segment.addEventListener('click', () => {
+                    currentFilter = key;
+                    renderPlantCards();
+                    updateActiveFilterButton();
+                    highlightSegmentedBar(key);
+                });
+                segmentedBarDiv.appendChild(segment);
+            });
+            highlightSegmentedBar(currentFilter);
+        }
+
+        function highlightSegmentedBar(filterKey) {
+            // Manage ring highlight and stacking for segments
+            const ringClasses = [
+                'ring-2', 'ring-offset-2', 'ring-white', 'z-10',
+                filterButtonStyles.FORESTAL.ringColor,
+                filterButtonStyles.FRUTAL.ringColor,
+                filterButtonStyles.ORNAMENTAL.ringColor,
+                filterButtonStyles.AROMATICA_MEDICINAL.ringColor,
+                filterButtonStyles.TODAS ? filterButtonStyles.TODAS.ringColor : ''
+            ];
+            document.querySelectorAll('.segmented-bar-segment').forEach(seg => {
+                // Remove existing ring and z-index classes
+                seg.classList.remove(...ringClasses.filter(Boolean));
+                // Reset base z-index
+                seg.classList.add('z-0');
+                // Highlight matching segment (except when showing all)
+                if (seg.dataset.segmentFilter === filterKey && filterKey !== 'TODAS') {
+                    seg.classList.add('ring-2', 'ring-offset-2', 'ring-white', filterButtonStyles[filterKey].ringColor, 'z-10');
+                }
+            });
+        }
+
+        function renderFilterMenu() {
+            filterMenu.innerHTML = '';
+            Object.keys(filterButtonStyles).forEach(key => {
+                const categoryInfo = filterButtonStyles[key];
+                const menuItem = document.createElement('button');
+                menuItem.className = `filter-menu-item flex items-center space-x-2 px-3 py-2 rounded-full text-sm font-medium shadow-md hover:shadow-lg focus:outline-none ${categoryInfo.bgColor} ${categoryInfo.textColor} ${categoryInfo.borderColor}`;
+
+                const iconSpan = document.createElement('span');
+                iconSpan.innerHTML = categoryInfo.iconKey ? svgIcons[categoryInfo.iconKey] : svgIcons.ARBOL;
+                menuItem.appendChild(iconSpan);
+
+                const textSpan = document.createElement('span');
+                textSpan.textContent = categoryInfo.name;
+                menuItem.appendChild(textSpan);
+                menuItem.dataset.filter = key;
+
+                if (key === currentFilter) {
+                    menuItem.classList.add('active', 'ring-2', 'ring-offset-2', 'ring-white', categoryInfo.ringColor);
+                }
+
+                menuItem.addEventListener('click', () => {
+                    currentFilter = key;
+                    renderPlantCards();
+                    updateActiveFilterButton();
+                    highlightSegmentedBar(key);
+                });
+                filterMenu.appendChild(menuItem);
+            });
+        }
+
+        function updateActiveFilterButton() {
+            document.querySelectorAll('#filterMenu .filter-menu-item').forEach(btn => {
+                const filterKey = btn.dataset.filter;
+                const styleInfo = filterButtonStyles[filterKey];
+                Object.values(filterButtonStyles).forEach(s => {
+                    if (s.ringColor) btn.classList.remove(s.ringColor);
+                });
+                btn.classList.remove('active', 'ring-2', 'ring-offset-2', 'ring-white');
+
+                if (filterKey === currentFilter && styleInfo) {
+                    btn.classList.add('active', 'ring-2', 'ring-offset-2', 'ring-white', styleInfo.ringColor);
+                }
+            });
+        }
+
+        function renderPlantCards() {
+            plantGrid.innerHTML = '';
+            const filteredPlants = plantData.filter(plant =>
+                currentFilter === 'TODAS' || plant.filterGroupForMenu === currentFilter
+            );
+
+            if (filteredPlants.length === 0) {
+                const msg = currentFilter === 'TODAS' ? "No hay datos de plantas para mostrar." : `No hay plantas en la categoría "${filterButtonStyles[currentFilter].name}".`;
+                plantGrid.innerHTML = `<p class="col-span-full text-center text-gray-500 text-xl py-10">${msg}</p>`;
+                return;
+            }
+
+            filteredPlants.forEach(plant => {
+                const cardThemeColors = filterButtonStyles[plant.filterGroupForMenu] || filterButtonStyles.TODAS;
+                const iconKeyForCard = cardThemeColors.iconKey;
+                let displayClassification = plant.clasificacion_csv.replace(/;\s*/g, ' / ');
+                let displayName = plant.nombre_comun.split(' / ')[0].split(' (')[0];
+
+                const card = document.createElement('div');
+                card.className = `plant-card ${cardThemeColors.bgColor} ${cardThemeColors.borderColor} ${cardThemeColors.textColor} rounded-xl shadow-lg p-4 md:p-5 flex flex-col items-center text-center overflow-hidden`;
+                card.dataset.categoryForStyle = iconKeyForCard;
+                card.dataset.filterGroup = plant.filterGroupForMenu;
+
+                const svgIconContainer = document.createElement('div');
+                svgIconContainer.className = 'svg-icon-container text-gray-700';
+                svgIconContainer.innerHTML = svgIcons[iconKeyForCard] || svgIcons.ARBOL;
+                svgIconContainer.addEventListener('click', () => {
+                    window.open(plant.image_url, '_blank');
+                });
+
+                const plantNameElement = document.createElement('h3');
+                plantNameElement.className = 'plant-name-common';
+                plantNameElement.textContent = displayName;
+
+                const scientificFamilyContainer = document.createElement('div');
+                scientificFamilyContainer.className = 'scientific-family-container';
+
+                const scientificNameElement = document.createElement('p');
+                scientificNameElement.className = 'scientific-name';
+                scientificNameElement.textContent = plant.nombre_cientifico;
+
+                const separatorElement = document.createElement('span');
+                separatorElement.className = 'info-separator';
+                separatorElement.textContent = '|';
+
+                const familyElement = document.createElement('p');
+                familyElement.className = 'family-text';
+                familyElement.textContent = plant.familia;
+
+                scientificFamilyContainer.appendChild(scientificNameElement);
+                scientificFamilyContainer.appendChild(separatorElement);
+                scientificFamilyContainer.appendChild(familyElement);
+
+                const classificationElement = document.createElement('p');
+                classificationElement.className = 'classification-text';
+                classificationElement.textContent = displayClassification;
+
+                const funFactElement = document.createElement('p');
+                funFactElement.className = 'fun-fact-text px-1';
+                funFactElement.textContent = plant.dato_curioso;
+
+                const imageButton = document.createElement('a');
+                imageButton.href = plant.image_url;
+                imageButton.target = '_blank';
+
+                const buttonBgColorClass = 'bg-white/90 hover:bg-white';
+                const buttonTextColorClass = cardThemeColors.cardButtonTextColor || 'text-slate-700';
+                const buttonTextHoverColorClass = buttonTextColorClass.includes('slate') ? 'hover:text-slate-900' : `hover:${buttonTextColorClass.replace('-700', '-800').replace('-800', '-900')}`;
+
+                imageButton.className = `button-plant inline-block ${buttonBgColorClass} ${buttonTextColorClass} ${buttonTextHoverColorClass} font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white/50`;
+                imageButton.textContent = 'Imágenes';
+
+                card.appendChild(svgIconContainer);
+                card.appendChild(plantNameElement);
+                card.appendChild(scientificFamilyContainer);
+                card.appendChild(classificationElement);
+                card.appendChild(funFactElement);
+                card.appendChild(imageButton);
+
+                plantGrid.appendChild(card);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            assignFilterGroupAndCount();
+            renderHeaderStatsAndSegmentedBar();
+            renderFilterMenu();
+            renderPlantCards();
+        });
+
+    </script>
+
+</body>
+
+</html>
