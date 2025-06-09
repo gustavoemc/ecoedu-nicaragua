@@ -7,11 +7,13 @@ Bienvenido al repositorio de **EcoEdu Nicaragua**: una plataforma abierta para c
 ## 🚀 Acceso rápido a recursos clave
 
 - [🌳 Especies MicroBosque LVH 2025 (HTML interactivo)](https://gustavoemc.github.io/ecoedu-nicaragua/html/Especies_MicroBosque_LVH_2025_v1.0.html)
-- [📁 Datos abiertos](/data)
-- [🛠️ Aplicaciones y notebooks](/apps)
-- [📄 Documentación y manuales](/docs)
+- [📁 Datos abiertos](/data) *(en desarrollo)*
+- [🛠️ Aplicaciones y notebooks](/apps) *(en desarrollo)*
+- [📄 Documentación y manuales](/docs) *(en desarrollo)*
 
 ---
+
+> **Nota:** Esta iniciativa está en desarrollo activo. Algunos enlaces pueden no tener contenido disponible aún, pero se irán habilitando progresivamente. ¡Tu colaboración y sugerencias son bienvenidas!
 
 ## ¿Qué es EcoEdu Nicaragua?
 
