@@ -102,12 +102,13 @@ Para publicar recursos HTML en GitHub Pages:
 
 ## 🌐 Enlaces útiles
 
-- [Sitio web publicado (GitHub Pages)](https://gustavoemc.github.io/ecoedu-nicaragua/)
+- [Sitio web publicado (GitHub Pages)](https://gustavoemc.github.io/ecoedu-nicaragua/index.html)
+- [Repositorio en GitHub](https://github.com/gustavoemc/ecoedu-nicaragua)
 - [Licencia CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.es)
 
 ---
 
-**Autor:** [Gustavo Ernesto Martínez Cárdenas](https://www.linkedin.com/in/gustavoernestom/)
+**Autor:** [Gustavo Ernesto Martínez Cárdenas](https://www.linkedin.com/in/gustavoernestom/) · [GitHub: gustavoemc](https://github.com/gustavoemc)
 **Última actualización:** junio 2025
 
 ---
