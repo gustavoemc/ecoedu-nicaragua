@@ -1,23 +1,23 @@
 # EcoEdu Nicaragua 🌱🇳🇮
 
-Bienvenido al repositorio de **EcoEdu Nicaragua**: una plataforma abierta para compartir datos, recursos educativos, aplicaciones y guías sobre biodiversidad y educación ambiental en Nicaragua.
+Bienvenido a **EcoEdu Nicaragua**: plataforma abierta para compartir datos, recursos educativos, aplicaciones y guías sobre biodiversidad y educación ambiental en Nicaragua.
 
 ---
 
-## 🚀 Acceso rápido a recursos clave
+## 🚀 Acceso rápido
 
 - [🌳 Especies MicroBosque LVH 2025 (HTML interactivo)](https://gustavoemc.github.io/ecoedu-nicaragua/html/Especies_MicroBosque_LVH_2025_v1.0.html)
 - [📁 Datos abiertos](/data) *(en desarrollo)*
 - [🛠️ Aplicaciones y notebooks](/apps) *(en desarrollo)*
 - [📄 Documentación y manuales](/docs) *(en desarrollo)*
 
----
+> **Nota:** Proyecto en desarrollo activo. Algunos enlaces pueden no tener contenido disponible aún. ¡Tu colaboración y sugerencias son bienvenidas!
 
-> **Nota:** Esta iniciativa está en desarrollo activo. Algunos enlaces pueden no tener contenido disponible aún, pero se irán habilitando progresivamente. ¡Tu colaboración y sugerencias son bienvenidas!
+---
 
 ## ¿Qué es EcoEdu Nicaragua?
 
-**EcoEdu Nicaragua** es un espacio colaborativo para docentes, estudiantes, investigadores, organizaciones y cualquier persona interesada en la educación ambiental y la biodiversidad de Nicaragua. Aquí encontrarás datos abiertos, materiales didácticos, visualizaciones interactivas y herramientas digitales para fortalecer la educación y la gestión sostenible de los recursos naturales.
+Espacio colaborativo para docentes, estudiantes, investigadores, organizaciones y ciudadanía interesada en la educación ambiental y biodiversidad de Nicaragua. Aquí encontrarás datos abiertos, materiales didácticos, visualizaciones interactivas y herramientas digitales para fortalecer la educación y la gestión sostenible de los recursos naturales.
 
 ---
 
@@ -30,7 +30,7 @@ Bienvenido al repositorio de **EcoEdu Nicaragua**: una plataforma abierta para c
 
 ---
 
-## 📦 Contenidos del repositorio
+## 📦 Estructura del repositorio
 
 - **/data/**: Datos abiertos (CSV, GeoJSON, etc.)
 - **/apps/**: Notebooks, scripts y aplicaciones interactivas
@@ -40,18 +40,34 @@ Bienvenido al repositorio de **EcoEdu Nicaragua**: una plataforma abierta para c
 
 ---
 
-## 🧭 ¿Cómo navegar y usar los recursos?
+## 🧭 ¿Cómo usar los recursos?
 
-- Explora las carpetas para acceder y descargar recursos.
-- Accede a visualizaciones y apps desde la sección "Acceso rápido".
-- Consulta los manuales y guías en `/docs/`.
-- Si eres desarrollador/a, revisa `/scripts/` para automatizar tareas o contribuir.
+1. Explora las carpetas para acceder y descargar recursos.
+2. Accede a visualizaciones y apps desde la sección "Acceso rápido".
+3. Consulta manuales y guías en `/docs/`.
+4. Si eres desarrollador/a, revisa `/scripts/` para automatizar tareas o contribuir.
 
 ---
 
-## 🤝 Contribuciones y contacto
+## 📄 Notas Técnicas y documentación avanzada
 
-Tus aportes y sugerencias son bienvenidos. Puedes abrir un issue, enviar un pull request o contactarnos para sumar recursos, reportar errores o proponer mejoras.
+- Guía completa y reproducible del workflow de publicación y socialización de recursos educativos y ambientales en GitHub Pages:
+  - [`docs/notas_tecnicas/NT-001-ecoedu-nicaragua-workflow.md`](docs/notas_tecnicas/NT-001-ecoedu-nicaragua-workflow.md)
+
+Incluye:
+
+- Estructura modular recomendada
+- Automatización del deploy
+- Configuración de GitHub Pages
+- Metadatos para vista previa en redes sociales
+- Validación, solución de problemas y buenas prácticas
+- Nomenclatura y organización para futuras notas técnicas
+
+---
+
+## 🤝 Contribuciones
+
+¡Tus aportes y sugerencias son bienvenidos! Puedes abrir un issue, enviar un pull request o contactarnos para sumar recursos, reportar errores o proponer mejoras.
 
 ---
 
