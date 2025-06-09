@@ -1,0 +1,44 @@
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Archivos temporales y de respaldo
+*.swp
+*.swo
+*.tmp
+*.bak
+*.log
+*.out
+~$*
+
+# Python
+__pycache__/
+*.pyc
+
+# VSCode y otros IDEs
+.vscode/
+.idea/
+*.code-workspace
+
+# Archivos de entorno y configuración local
+.env
+.env.*
+
+# Archivos de sincronización de OneDrive y accesos directos
+*.lnk
+
+# Node/npm (por si se agregan scripts JS en el futuro)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Archivos de pruebas o builds temporales
+/dist/
+/build/
+
+# Otros
+*.orig
+*.rej
+
+# ¡No ignores /docs/ ni /html/ ni recursos de datos!
